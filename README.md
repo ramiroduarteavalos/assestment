@@ -86,7 +86,7 @@ spec:
 helm upgrade dev --install zebrands/ingress -n dev -f devops/values.dev.yaml 
 ```
 
-* Execute pipeline [frontend](https://gitlab.com/ramiroduarteavalos/frontend/) && [backend](https://gitlab.com/ramiroduarteavalos/backend/)
+* Execute pipeline [frontend](https://github.com/ramiroduarteavalos/frontend/) && [backend](https://github.com/ramiroduarteavalos/backend/)
 
 | frontend | [url](https://dev.cloude.ar/) |
 
