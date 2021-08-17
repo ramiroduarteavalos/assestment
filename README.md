@@ -49,58 +49,41 @@ helm repo index --url https://ramiroduarteavalos.github.io/library/charts .
 helm repo add zebrands https://ramiroduarteavalos.github.io/library/charts
 ```
 
-* Install [kong-ingress]()
+* Install [kong-ingress](https://github.com/ramiroduarteavalos/ingress)
 
 Create kong-ingress helm chart
 
 ```
-{{- if .Values.ingress.enabled -}}
-{{- $fullName := include "zebrands.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
-{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-apiVersion: networking.k8s.io/v1beta1
-{{- else -}}
-apiVersion: extensions/v1beta1
-{{- end }}
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
-  labels:
-    {{- include "zebrands.labels" . | nindent 4 }}
-  #{{- with .Values.ingress.annotations }}
+  name: {{ .Values.namespace }}
   annotations:
-  #  {{- toYaml . | nindent 4 }}
-  #{{- end }}
-  kubernetes.io/ingress.class: kong
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
-  {{- if .Values.ingress.tls }}
-  tls:
-    {{- range .Values.ingress.tls }}
-    - hosts:
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-      secretName: {{ .secretName }}
-    {{- end }}
-  {{- end }}
   rules:
-    {{- range .Values.ingress.hosts }}
     - host: {{ .Values.zebrands.Domain }}
       http:
         paths:
-          {{- range .paths }}
-          - path: {{ . }}
+          - path: "/welcome"
             backend:
-              serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
-          {{- end }}
-    {{- end }}
-  {{- end }}
+              serviceName: backend-zebrands
+              servicePort: 3000
+          - path: "/"
+            backend:
+              serviceName: frontend-zebrands
+              servicePort: 80 
+
+  tls:
+  - hosts:
+    - {{ .Values.zebrands.Domain }}
+    secretName: zebrands-tls
 
 ```
 
 ```
-helm updgrade dev --install zebrands/ingress -n dev -f devops/valus.yaml -f devops/values.dev.yaml 
+helm upgrade dev --install zebrands/ingress -n dev -f devops/values.dev.yaml 
 ```
 
 * Execute pipeline [frontend](https://gitlab.com/ramiroduarteavalos/frontend/) && [backend](https://gitlab.com/ramiroduarteavalos/backend/)
