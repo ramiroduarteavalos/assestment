@@ -92,7 +92,7 @@ helm upgrade dev --install zebrands/ingress -n dev -f devops/values.dev.yaml
 
 ![](images/react.png)
 
-| backend | [url](https://backend.dev.cloude.ar/welcome/) |
+| backend | [url](https://dev.cloude.ar/welcome/) |
 
 ![](images/python.png)
 
